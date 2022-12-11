@@ -1,10 +1,14 @@
 import express, { Express, Request, Response } from "express";
 import mongoose from "mongoose";
 
+import "dotenv/config";
+
 const app: Express = express();
-const port = process.env.PORT || 8080;
-const mongoUri =
-  process.env.MONGO_URI || "mongodb://0.0.0.0:27017/student-management-app";
+const port = process.env.PORT;
+const mongoUri = process.env.MONGO_URI;
+
+app.use(express.json());
+app.use(express.urlencoded());
 
 const options = {
   useNewUrlParser: true,
@@ -16,11 +20,12 @@ mongoose
   .catch((err) => console.log(`[ SERVER ] : Some Error Occured: ${err}`))
   .then(() => console.log("[ SERVER ] : Conected to Database"));
 
-app.use(express.json());
-app.use(express.urlencoded());
+import AuthRoutes from "./routes/auth.routes";
+
+app.use("/api/", AuthRoutes);
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("Express + TypeScript Server");
+  res.send("Hi world");
 });
 
 app.listen(port, () => {
