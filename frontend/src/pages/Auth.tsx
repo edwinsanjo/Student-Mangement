@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Login } from "../components/Login";
-import { Signup } from "../components/Signup";
+import { LoginStudent } from "../components/LoginStudent";
+import { SignupStudent } from "../components/SignupStudent";
 
 export const Auth = () => {
     const [Auth, setAuth] = useState(true)
@@ -13,10 +13,10 @@ export const Auth = () => {
             <div>
                 {Auth ? (
                     <div>
-                        <Login />
+                        <LoginStudent />
                     </div>
                 ) : (
-                    <Signup />
+                    <SignupStudent />
                 )}
             </div>
         </div>

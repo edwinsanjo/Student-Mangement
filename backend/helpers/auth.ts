@@ -14,20 +14,24 @@ const isEmail = (email: string) => {
 };
 
 export default {
-  adminLogin: (req: Request, res: Response) => {
+  adminLogin: async (req: Request, res: Response) => {
     // Checking
-    if (!req.body.email) return res.send("Email Not Provided");
-    if (!req.body.password) return res.send("Password Not Provided");
+    if (!req.body.email) return res.status(400).send("Email Not Provided");
+    if (!req.body.password)
+      return res.status(400).send("Password Not Provided");
     const { email, password } = req.body;
-    if (!isEmail(email)) return res.send("Invalid Email");
+    if (!isEmail(email)) return res.status(400).send("Invalid Email");
 
     // Queriying Database
-    adminModel.findOne({ email: email }).then((data: any) => {
-      if (!data) return res.send("email not found");
+    await adminModel.findOne({ email: email }).then((data: any) => {
+      if (!data) return res.status(400).send("email not found");
 
-      bcrypt.compare(password, data.password, (e, d) => {
-        if (e) return res.send("Some Error Occured");
-        if (!d) res.send("Wrong Password");
+      bcrypt.compare(password, data.password, async (e, d) => {
+        if (e)
+          return res
+            .status(400)
+            .send("Some Error Occured (Bcrypt - SERVER ISSUE)");
+        if (!d) res.status(400).send("Wrong Password");
         if (d) {
           let payload = {
             _id: data._id,
@@ -36,13 +40,13 @@ export default {
             phoneNo: data.phoneNo,
             avatar: data.avatar,
           };
-          jwt.sign(
+          await jwt.sign(
             payload,
             jwtSecret,
-            { expiresIn: 31556926 },
+            { expiresIn: 31556926 }, // One year
             (err, token) => {
               if (err) {
-                res.send("Some Error Occured");
+                res.status(400).send("Some Error Occured (JWT signing)");
                 return console.log(err);
               }
 

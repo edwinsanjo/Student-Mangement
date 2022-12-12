@@ -1,22 +1,34 @@
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
+import axios from "axios"
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-export const Login = () => {
+export const AdminLogin = () => {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [viewPassword, setViewPassword] = useState(false);
 
-    function validateEmail(elementValue: string) {
-        var emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-        return emailPattern.test(elementValue);
-    }
-
     const onSubmit = (e: any) => {
         e.preventDefault()
+        if (!email) return toast.info("No Email Provided");
+        if (!password) return toast.info("No Password Provided");
+        let data = {
+            email: email,
+            password: password
+        }
+        axios.post("http://localhost:8080/api/login/admin", data)
+            .then(response => {
+                // if (!response) return
+                console.log(response);
+                return toast.success("success : " + response)
+            })
+            .catch(error => {
+                console.error('There was an error: ', error);
+                return toast.error(error.response.data)
+            })
     }
 
     return (
